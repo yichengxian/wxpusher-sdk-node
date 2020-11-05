@@ -29,6 +29,7 @@
      * @return {Promise<void>}
      */
     static async testSend() {
+       // 或者使用自有对象入参 {appToken:'',content:''}
         const message = new Message();
         message.appToken = '';
         message.content = '使用nodejs 模仿java的写法是可取的';
@@ -56,6 +57,7 @@
      * @return {Promise<void>}
      */
     static async testCreateAppTempQrcode() {
+        // 或者使用对象作为入参 {appToken:'',extra:'key'}
         const qrcodeReq = new CreateQrcodeReq();
         qrcodeReq.appToken = '';
         qrcodeReq.extra = 'key';
@@ -88,7 +90,9 @@
 
 1.0.0
 
-
+## 代码模型
+即使，官方code 封装性不太如意(但仅仅只是对于我来说)，但是依旧保持一致的效益
+[官方java code](https://github.com/wxpusher/wxpusher-sdk-java/)
 
 ## 其他说明
 
