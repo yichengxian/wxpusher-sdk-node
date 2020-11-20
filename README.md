@@ -11,7 +11,7 @@
 ## 内容说明
 
 - nodeJS SDK的源代码目录
-- 基于官方java源码构建,初学node一个月多。
+- 基于官方java源码构建。
 
 
 
@@ -24,13 +24,17 @@
 参考**WxPusherTest**
 
 ```javascript
- /**
+//导入
+const wxPusher = require('wxpusher');
+
+class Test8 {
+    /**
      * 测试发送消息
      * @return {Promise<void>}
      */
     static async testSend() {
-       // 或者使用自有对象入参 {appToken:'',content:''}
-        const message = new Message();
+        // 或者使用自有对象入参 {appToken:'',content:''}
+        const message = {};
         message.appToken = '';
         message.content = '使用nodejs 模仿java的写法是可取的';
         message.topicIds = Array.of(123)
@@ -58,7 +62,7 @@
      */
     static async testCreateAppTempQrcode() {
         // 或者使用对象作为入参 {appToken:'',extra:'key'}
-        const qrcodeReq = new CreateQrcodeReq();
+        const qrcodeReq = {};
         qrcodeReq.appToken = '';
         qrcodeReq.extra = 'key';
         qrcodeReq.validTime = 60;
@@ -82,13 +86,19 @@
         console.log('==========执行QueryWxUser测试============');
 
     }
+}
+
+Test8.testSend()
+Test8.testCreateAppTempQrcode();
+Test8.testQueryMessageStatus();
+Test8.testQueryWxUser()
 ```
 
 
 
 ## 版本
 
-1.0.0
+1.0.2
 
 ## 代码模型
 即使，官方code 封装性不太如意(但仅仅只是对于我来说)，但是依旧保持一致的效益
@@ -96,4 +106,4 @@
 
 ## 其他说明
 
-本项目未传npm，暂还没搞明白如何使用
+
