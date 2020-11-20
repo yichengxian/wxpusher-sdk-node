@@ -35,3 +35,4 @@ class WxUser {
     headImg;
 
 }
+module.exports =WxUser

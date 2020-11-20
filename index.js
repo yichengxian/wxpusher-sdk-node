@@ -1,5 +1,3 @@
-
 //
-require('/wxpusher/client/WxPusher');
-require('/wxpusher/client/bean/message/Message');
-require('/wxpusher/client/bean/CreateQrcodeReq');
+const WxPusher = require('/wxpusher/client/WxPusher');
+module.exports = WxPusher;
