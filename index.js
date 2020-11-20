@@ -1,3 +1,7 @@
-//
-const WxPusher = require('/wxpusher/client/WxPusher');
+const WxPusher = require('./wxpusher/client/WxPusher');
+
 module.exports = WxPusher;
+
+
+
+
