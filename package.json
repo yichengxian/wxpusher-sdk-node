@@ -8,5 +8,9 @@
   },
   "keywords": ["wxpusher-sdk-node","wxpusher"],
   "author": "chengxian-yi",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yichengxian/wxpusher-sdk-node.git"
+  }
 }
