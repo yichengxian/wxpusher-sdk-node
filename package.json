@@ -2,11 +2,11 @@
   "name": "wxpusher-sdk-node",
   "version": "1.0.0",
   "description": "wx pusher sdk node ",
-  "main": "./wxpusher/client/WxPusher.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": ["wxpusher-sdk-node","wxpusher"],
-  "author": "",
+  "author": "chengxian-yi",
   "license": "MIT"
 }
