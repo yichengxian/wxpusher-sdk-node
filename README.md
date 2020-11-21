@@ -98,10 +98,9 @@ Test8.testQueryWxUser()
 
 ## 版本
 
-1.0.2
+1.0.3
 
 ## 代码模型
-即使，官方code 封装性不太如意(但仅仅只是对于我来说)，但是依旧保持一致的效益
 [官方java code](https://github.com/wxpusher/wxpusher-sdk-java/)
 
 ## 其他说明
