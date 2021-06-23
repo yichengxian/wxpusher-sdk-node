@@ -13,11 +13,21 @@
 - nodeJS SDK的源代码目录
 - 基于官方java源码构建。
 
-
-
 ## nodeJS版本
 
 最低要求nodeJS 8以上
+
+
+
+## 实现列表
+
+- 发送消息
+- 查询消息状态
+- 创建二维码
+- 查询关注列表
+- 查询App的关注用户V2版本
+- 移除用户
+- 拉黑用户
 
 ## 使用说明
 
@@ -25,21 +35,28 @@
 
 ```javascript
 //导入
-const wxPusher = require('wxpusher');
+const {wxPusher,Message,CreateQrcodeReq,WxUserReqParam,WxUserV2ReqParam} = require('wxpusher');
 
-class Test8 {
+/**
+ * @author ycx
+ * @description: 代码测试
+ */
+class WxPusherTest {
+
+
+    static wxPusher = new WxPusher('你的apptoken')
+
     /**
      * 测试发送消息
      * @return {Promise<void>}
      */
     static async testSend() {
-        // 或者使用自有对象入参 {appToken:'',content:''}
-        const message = {};
-        message.appToken = '';
+        const message = new Message();
         message.content = '使用nodejs 模仿java的写法是可取的';
-        message.topicIds = Array.of(123)
+        // message.topicIds = Array.of(123);
+        message.uids = ['UID_l7Ab9Lg0ajiJ27tGvdrMJe8rrbmX']
         // console.log(message)
-        const result = await wxPusher.send(message);
+        const result = await this.wxPusher.send(message);
 
         console.log(result);
         console.log('==========执行send测试============');
@@ -51,22 +68,20 @@ class Test8 {
      */
     static async testQueryMessageStatus() {
 
-        const result = await wxPusher.queryMessageStatus(1223443);
+        const result = await this.wxPusher.queryMessageStatus(187372335);
         console.log(result);
         console.log('==========执行QueryMessageStatus测试============');
     }
 
     /**
-     * 测试创二维码
+     * 测试创建二维码
      * @return {Promise<void>}
      */
     static async testCreateAppTempQrcode() {
-        // 或者使用对象作为入参 {appToken:'',extra:'key'}
-        const qrcodeReq = {};
-        qrcodeReq.appToken = '';
+        const qrcodeReq = new CreateQrcodeReq();
         qrcodeReq.extra = 'key';
         qrcodeReq.validTime = 60;
-        const result = await wxPusher.createAppTempQrcode(qrcodeReq);
+        const result = await this.wxPusher.createAppTempQrcode(qrcodeReq);
 
         console.log(result);
         console.log('==========执行CreateAppTempQrcode测试============');
@@ -77,28 +92,68 @@ class Test8 {
      * @return {Promise<void>}
      */
     static async testQueryWxUser() {
-        const appToken = 'xxx';
-        const uid = 'xxxx';
-        const page = 1;
-        const pageSize = 10;
-        const result = await wxPusher.queryWxUser(appToken, uid, page, pageSize);
-        console.log(result);
+
+        const wxUserReqParam = new WxUserReqParam();
+
+        wxUserReqParam.page = 1;
+        wxUserReqParam.pageSize = 50;
+        const result = await this.wxPusher.queryWxUser(wxUserReqParam);
+        console.log(JSON.stringify(result));
         console.log('==========执行QueryWxUser测试============');
 
     }
+
+    /**
+     * 测试 查询App的关注用户V2
+     * @return {Promise<void>}
+     */
+    static async testQueryWxUserByV2() {
+        const wxUserV2ReqParam = new WxUserV2ReqParam();
+        wxUserV2ReqParam.page = 1;
+        wxUserV2ReqParam.pageSize = 50;
+        const result = await this.wxPusher.queryWxUserByV2(wxUserV2ReqParam);
+        console.log(JSON.stringify(result));
+        console.log('==========执行QueryWxUserByV2测试============');
+    }
+
+    /**
+     * 测试移除用户
+     * @return {Promise<void>}
+     */
+    static async testRemoveUser() {
+        //98018
+        const result = await this.wxPusher.removeUser('98018');
+        console.log(JSON.stringify(result));
+        console.log('==========执行RemoveUser测试============');
+    }
+
+    /**
+     * 测试拉黑用户
+     * @return {Promise<void>}
+     */
+    static async testRejectUser(){
+        const result = await this.wxPusher.rejectUser('98018',true);
+        console.log(JSON.stringify(result));
+        console.log('==========执行RejectUser测试============');
+    }
+
+
 }
 
-Test8.testSend()
-Test8.testCreateAppTempQrcode();
-Test8.testQueryMessageStatus();
-Test8.testQueryWxUser()
+//WxPusherTest.testSend()
+//WxPusherTest.testQueryMessageStatus();
+//WxPusherTest.testCreateAppTempQrcode()
+//WxPusherTest.testQueryWxUser();
+//WxPusherTest.testQueryWxUserByV2();
+//WxPusherTest.testRemoveUser();
+//WxPusherTest.testRejectUser();
 ```
 
 
 
 ## 版本
 
-1.0.3
+1.0.4
 
 ## 代码模型
 [官方java code](https://github.com/wxpusher/wxpusher-sdk-java/)

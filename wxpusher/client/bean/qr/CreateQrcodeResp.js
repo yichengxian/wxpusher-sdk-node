@@ -1,7 +1,7 @@
 /**
  * @author ycx
  *
- * 定义二维码生成参数规范调用提示
+ *
  */
 class CreateQrcodeResp {
 

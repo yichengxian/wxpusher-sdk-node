@@ -27,6 +27,10 @@ class HttpUtil {
      */
     static CONTENT_TYPE = 'application/json';
 
+    /**
+     * 端口
+     * @type {number}
+     */
     static PORT = 80;
 
     /**
@@ -54,7 +58,14 @@ class HttpUtil {
         //
         const req = http.request(options, res => {
             res.setEncoding(this.CHARSET_NAME);
-            res.on('data', chunk => callback(JSON.parse(chunk)));
+            //分块传输
+            let resData = '';
+            res.on('data', chunk => {
+                resData += chunk;
+                res.on('end',()=>{
+                    callback(JSON.parse(resData));
+                })
+            });
         });
 
         req.on('error', err => {
@@ -76,15 +87,87 @@ class HttpUtil {
 
         const options = {
             hostname: this.BASE_URL,
-            port:this.PORT,
+            port: this.PORT,
             path: path + '?' + qs.stringify(data),
             method: 'GET',
         };
         const req = http.request(options, res => {
             res.setEncoding(this.CHARSET_NAME);
+            //分块传输
+            let resData = '';
             res.on('data', chunk => {
-                console.log(chunk)
-                callback(JSON.parse(chunk));
+                resData += chunk;
+                res.on('end',()=>{
+                    callback(JSON.parse(resData));
+                })
+            });
+
+        });
+
+        req.on('error', err => {
+            console.error('err with request:', err.stack);
+            callback(new Result(ResultCode.NETWORK_ERROR, '发送请求异常'))
+        });
+        req.end()
+    }
+
+    /**
+     * delete 请求
+     * @param data {Object} 数据
+     * @param path  {string}路径
+     * @param callback {{function(Result):void} } 回调
+     */
+    static delete(data, path, callback) {
+
+        const options = {
+            hostname: this.BASE_URL,
+            port: this.PORT,
+            path: path + '?' + qs.stringify(data),
+            method: 'DELETE',
+        };
+        const req = http.request(options, res => {
+            res.setEncoding(this.CHARSET_NAME);
+            //分块传输
+            let resData = '';
+            res.on('data', chunk => {
+                resData += chunk;
+                res.on('end',()=>{
+                    callback(JSON.parse(resData));
+                })
+            });
+        });
+
+        req.on('error', err => {
+            console.error('err with request:', err.stack);
+            callback(new Result(ResultCode.NETWORK_ERROR, '发送请求异常'))
+        });
+        req.end()
+    }
+
+
+    /**
+     * delete 请求
+     * @param data {Object} 数据
+     * @param path  {string}路径
+     * @param callback {{function(Result):void} } 回调
+     */
+    static put(data, path, callback) {
+
+        const options = {
+            hostname: this.BASE_URL,
+            port: this.PORT,
+            path: path + '?' + qs.stringify(data),
+            method: 'PUT',
+        };
+        const req = http.request(options, res => {
+            res.setEncoding(this.CHARSET_NAME);
+            //分块传输
+            let resData = '';
+            res.on('data', chunk => {
+                resData += chunk;
+                res.on('end',()=>{
+                    callback(JSON.parse(resData));
+                })
             });
         });
 

@@ -1,6 +1,8 @@
 const Result = require('./bean/result/Result');
 const ResultCode = require('./bean/result/ResultCode');
 const HttpUtil = require('./HttpUtil');
+const StrUtil = require('./util/StrUtil');
+const WxPusherError = require('./error/WxPusherError');
 
 /**
  * @author ycx
@@ -9,12 +11,40 @@ const HttpUtil = require('./HttpUtil');
 class WxPusher {
 
     /**
+     * @type {string}
+     */
+    appToken;
+
+    /**
+     *
+     * @param appToken {string}
+     */
+    constructor(appToken) {
+        this.appToken = Object.freeze(appToken);
+    }
+
+    /**
+     * 获取token
+     */
+    getToken() {
+        if (StrUtil.isEmpty(this.appToken)) {
+            throw new WxPusherError('appToken为空或未赋值');
+        }
+        return this.appToken;
+    }
+
+    /**
      * 发送消息
      * @param message {Message}
      * @return {Promise<Result>}
      */
-    static send(message) {
+    send(message) {
+
+
+
         return new Promise(resolve => {
+            //设置token
+            message.appToken = this.getToken();
             let result = this.verify(message);
             if (null !== result) {
                 resolve(result);
@@ -34,9 +64,9 @@ class WxPusher {
      * @param messageId {number} 消息id
      * @return {Promise<Result>}
      */
-    static queryMessageStatus(messageId) {
+    queryMessageStatus(messageId) {
         return new Promise(resolve => {
-            if (undefined === messageId || null === messageId || 0 >= messageId) {
+            if (undefined === messageId || null == messageId || 0 >= messageId) {
                 resolve(new Result(ResultCode.BIZ_FAIL, "messageId为空"));
                 return;
             }
@@ -51,9 +81,11 @@ class WxPusher {
      * @param createQrcodeReq {CreateQrcodeReq} qr参数
      * @return {Promise<Result<CreateQrcodeResp>>}
      */
-    static createAppTempQrcode(createQrcodeReq) {
+    createAppTempQrcode(createQrcodeReq) {
+
 
         return new Promise(resolve => {
+            createQrcodeReq.appToken = this.getToken();
             //
             HttpUtil.post(createQrcodeReq, '/api/fun/create/qrcode', (res) => {
                 resolve(res)
@@ -64,39 +96,33 @@ class WxPusher {
 
     /**
      * 查询关注你App的微信用户
-     * @param appToken {string} 应用token
-     * @param uid {string} 根据UID过滤用户
-     * @param page {number} 页码
-     * @param pageSize {number} 页面大小
+     * @param wxUserReqParam {WxUserReqParam}  获取关注用户请求参数
      * @return {Promise<Result<Page<WxUser>>>}
      */
-    static queryWxUser(appToken, uid, page, pageSize) {
+    queryWxUser(wxUserReqParam) {
+
 
         return new Promise(resolve => {
-            if (undefined === appToken || 0 === appToken.length) {
-                resolve(new Result(ResultCode.BIZ_FAIL, "appToken不能为空"));
-                return;
-            }
 
-            if (undefined === page || 0 >= page) {
+            wxUserReqParam.appToken = this.getToken();
+            if (undefined === wxUserReqParam.page || 0 >= wxUserReqParam.page) {
                 resolve(new Result(ResultCode.BIZ_FAIL, "page不合法"));
                 return;
             }
-            if (undefined === pageSize || 0 >= pageSize) {
+            if (undefined === wxUserReqParam.pageSize || 0 >= wxUserReqParam.pageSize) {
                 resolve(new Result(ResultCode.BIZ_FAIL, "pageSize不合法"));
                 return;
             }
             //
             let dataJson = {
-                'appToken': appToken,
-                'page': page,
-                'pageSize': pageSize,
+                'appToken': wxUserReqParam.appToken,
+                'page': wxUserReqParam.page,
+                'pageSize': wxUserReqParam.pageSize,
             }
-
-            if (undefined !== uid) {
-                dataJson.uid = uid;
+            //如果存在用户就传参数
+            if (wxUserReqParam.uid) {
+                dataJson.uid = wxUserReqParam.uid;
             }
-
             HttpUtil.get(dataJson, '/api/fun/wxuser', (res) => {
                 resolve(res)
             })
@@ -113,18 +139,97 @@ class WxPusher {
      * @param message {Message}
      * @return {Result | null}
      */
-    static verify(message) {
-        if (null === message || undefined === message) {
+    verify(message) {
+        if (!message) {
             return new Result(ResultCode.BIZ_FAIL, '消息不能为空');
         }
-        if (null === message.appToken || undefined === message.appToken) {
-            return new Result(ResultCode.BIZ_FAIL, 'appToken不能为空');
-        }
-        if (null === message.content || undefined === message.content) {
+        if (!message.content) {
             return new Result(ResultCode.BIZ_FAIL, 'content不能为空');
         }
         return null;
     }
+
+    /**
+     * 查询App的关注用户V2
+     * 一个微信用户，如果同时关注应用，主题，甚至关注多个主题，会返回多条记录
+     * @param wxUserV2ReqParam {WxUserV2ReqParam} 查询App的关注用户V2的参数
+     * @return {Promise<Result<>>}
+     */
+    queryWxUserByV2(wxUserV2ReqParam) {
+
+        return new Promise(resolve => {
+
+            wxUserV2ReqParam.appToken = this.getToken();
+
+            if (undefined === wxUserV2ReqParam.page || 0 >= wxUserV2ReqParam.page) {
+                resolve(new Result(ResultCode.BIZ_FAIL, "page不合法"));
+                return;
+            }
+            if (undefined === wxUserV2ReqParam.pageSize || 0 >= wxUserV2ReqParam.pageSize) {
+                resolve(new Result(ResultCode.BIZ_FAIL, "pageSize不合法"));
+                return;
+            }
+            //
+            HttpUtil.get(wxUserV2ReqParam, '/api/fun/wxuser/v2', (res) => {
+                resolve(res)
+            })
+
+        });
+    }
+
+    /**
+     * 删除用户
+     * @param userId {string} 用户id 通过用户查询接口可以获取
+     * @return {Promise<Result>}
+     */
+    removeUser(userId) {
+        return new Promise(resolve => {
+
+            if (StrUtil.isEmpty(userId)) {
+                resolve(new Result(ResultCode.BIZ_FAIL, "userId不能为空"));
+                return;
+            }
+            const dataJson = {
+                appToken: this.getToken(),
+                id: uid
+            }
+
+            HttpUtil.delete(dataJson, '/api/fun/remove', (res) => {
+                resolve(res)
+            })
+
+        });
+    }
+
+    /**
+     * 拉黑用户
+     * @param userId {string} 用户id 通过用户查询接口可以获取
+     * @param isReject {boolean} 是否拉黑，true表示拉黑，false表示取消拉黑
+     * @return {Promise<Result>}
+     */
+    rejectUser(userId, isReject) {
+
+        return new Promise(resolve => {
+
+            if (StrUtil.isEmpty(userId)) {
+                resolve(new Result(ResultCode.BIZ_FAIL, "userId不能为空"));
+                return;
+            }
+            //
+            const dataJson = {
+                appToken:this.getToken(),
+                reject: isReject,
+                id: uid
+            }
+
+            HttpUtil.put(dataJson, '/api/fun/reject', (res) => {
+                resolve(res)
+            })
+
+        });
+    }
+
+
 }
 
 module.exports = WxPusher

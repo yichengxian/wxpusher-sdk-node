@@ -1,13 +1,9 @@
 /**
  * @author ycx
- * @description 带参数app 的临时二维码
+ * @description 定义二维码生成参数规范调用提示
  */
-class CreateQrcodeReq {
-    /**
-     * 应用app token
-     * @type {string}
-     */
-    appToken;
+class CreateQrcodeReqParam {
+
     /**
      * 附带数据
      * @type {string}
@@ -20,4 +16,4 @@ class CreateQrcodeReq {
     validTime
 }
 
-module.exports = CreateQrcodeReq
+module.exports = CreateQrcodeReqParam
