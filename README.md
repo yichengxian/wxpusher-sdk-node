@@ -153,7 +153,7 @@ class WxPusherTest {
 
 ## 版本
 
-1.0.4
+2.0.0
 
 ## 代码模型
 [官方java code](https://github.com/wxpusher/wxpusher-sdk-java/)
