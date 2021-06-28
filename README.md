@@ -17,8 +17,10 @@
 
 最低要求nodeJS 8以上
 
-
-
+## 安装
+```shell script
+    npm install wxpusher
+```
 ## 实现列表
 
 - 发送消息
